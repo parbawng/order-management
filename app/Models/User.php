@@ -41,4 +41,44 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function loginoutLogs()
+    {
+        return $this->hasMany(LoginoutLog::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany('App\Models\AccountSetup\Role', 'role_users');
+    }
+
+    public function cachedRoles()
+    {
+        $key = 'roles_' . $this->id;
+        return cache()->rememberForever($key, function () {
+            return $this->roles;
+        });
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany('App\Models\AccountSetup\Permission', 'permission_users');
+    }
+
+    public function cachedPermissions()
+    {
+        $key = 'permissions_' . $this->id;
+        return cache()->rememberForever($key, function () {
+            return $this->permissions;
+        });
+
+    }
+
+    public function isSuperAdmin()
+    {
+        return ($this->cachedRoles()->first()->id??0) === 1;
+    }
+
+
 }
