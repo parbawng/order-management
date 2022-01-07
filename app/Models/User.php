@@ -79,6 +79,10 @@ class User extends Authenticatable
     {
         return ($this->cachedRoles()->first()->id??0) === 1;
     }
+    public function isAdmin()
+    {
+        return ($this->cachedRoles()->first()->id??0) === 2;
+    }
 
 
 }
